@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './app.module';
-import { AppService } from './app.service';
+// import { AppService } from './app.service';
 
 async function bootstrap() {
   // Create the microservice
@@ -16,11 +16,11 @@ async function bootstrap() {
     },
   );
 
-  // Get the AppService to communicate with the server microservice
-  const appService = app.get(AppService);
-  
-  // Send a test message to the server microservice
-  await appService.sendSumRequest();
+  // // Get the AppService to communicate with the server microservice
+  // const appService = app.get(AppService);
+
+  // // Send a test message to the server microservice
+  // await appService.connectToProcessingServices();
 
   // Start the client microservice
   await app.listen();
