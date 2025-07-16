@@ -5,8 +5,7 @@
     "start": "ts-node test-client.ts"
   },
   "dependencies": {
-    "@nestjs/microservices": "^10.0.0",
-    "rxjs": "^7.8.0"
+    "axios": "^1.6.0"
   },
   "devDependencies": {
     "ts-node": "^10.9.1",

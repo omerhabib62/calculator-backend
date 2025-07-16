@@ -1,30 +1,16 @@
 import { NestFactory } from '@nestjs/core';
-import { Transport, MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './app.module';
-// import { AppService } from './app.service';
 
 async function bootstrap() {
-  // Create the microservice
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    {
-      transport: Transport.TCP,
-      options: {
-        host: '127.0.0.1',
-        port: 3001, // Client microservice listens on a different port
-      },
-    },
-  );
-
-  // // Get the AppService to communicate with the server microservice
-  // const appService = app.get(AppService);
-
-  // // Send a test message to the server microservice
-  // await appService.connectToProcessingServices();
-
-  // Start the client microservice
-  await app.listen();
-  console.log('Client microservice is listening on port 3001');
+  // Create the HTTP application (gateway)
+  const app = await NestFactory.create(AppModule);
+  
+  // Enable CORS for frontend integration
+  app.enableCors();
+  
+  // Start the HTTP server
+  await app.listen(3001);
+  console.log('Calculator Gateway is running on http://localhost:3001');
 }
 
-bootstrap();
+bootstrap().catch(console.error);
