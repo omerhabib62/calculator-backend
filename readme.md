@@ -1,104 +1,159 @@
 # Calculator Microservices System
 
-This repository contains a calculator system implemented using NestJS microservices. It consists of four processing microservices (`sum`, `multiply`, `subtract`, `divide`) and a gateway microservice that routes client requests to the appropriate processing microservice.
+A distributed calculator system built with NestJS microservices architecture.
 
-## Project Structure
+## Architecture
 
-```
-calculator/
-├── divide/                 # Divide microservice (port 3005)
-├── multiply/               # Multiply microservice (port 3003)
-├── subtract/               # Subtract microservice (port 3004)
-├── sum/                    # Sum microservice (port 3002)
-├── gateway/                # Gateway microservice (port 3001)
-├── test-client/            # Test client script
-├── docs/                   # Documentation (LaTeX and PDF)
-│   ├── calculator-microservices-guide.tex
-│   ├── generated-pdf.pdf
-├── .gitignore
-├── README.md
-```
+- **Gateway** (Port 3001): HTTP API gateway that routes requests to appropriate microservices
+- **Sum Service** (Port 3002): Handles addition operations
+- **Subtract Service** (Port 3003): Handles subtraction operations  
+- **Multiply Service** (Port 3004): Handles multiplication operations
+- **Divide Service** (Port 3005): Handles division operations
 
 ## Prerequisites
 
 - Node.js v20 or later
-- npm
-- TypeScript
-- LaTeX distribution (for PDF compilation)
+- npm v10 or later
 
-## Setup Instructions
+## Quick Start
 
-1. **Clone the Repository**:
+1. **Install dependencies for all services:**
+
    ```bash
-   git clone <repository-url>
-   cd calculator
+   cd gateway && npm install && cd ..
+   cd sum && npm install && cd ..
+   cd subtract && npm install && cd ..
+   cd multiply && npm install && cd ..
+   cd divide && npm install && cd ..
+   cd test-client && npm install && cd ..
    ```
 
-2. **Install Dependencies**:
-   For each microservice folder (`divide`, `multiply`, `subtract`, `sum`, `gateway`):
+2. **Start all services:**
+
    ```bash
-   cd <microservice-folder>
-   npm install
-   ```
-   For the test client:
-   ```bash
-   cd test-client
-   npm install
+   ./run-calculator.sh
    ```
 
-3. **Start Microservices**:
-   Start each processing microservice in a separate terminal:
-   ```bash
-   cd sum && npm run start
-   cd multiply && npm run start
-   cd subtract && npm run start
-   cd divide && npm run start
-   ```
-   Start the gateway:
-   ```bash
-   cd gateway && npm run start
-   ```
+3. **Test the system:**
+   In a new terminal:
 
-4. **Run the Test Client**:
    ```bash
    cd test-client
-   npx tsc test-client.ts
-   node test-client.js
+   npm start
    ```
 
-   Expected output:
-   ```
-   Connected to gateway microservice
-   Result of sum([1,2,3,4]): 10
-   Result of multiply([2,3,4]): 24
-   Result of subtract([10,3,2]): 5
-   Result of divide([100,5,2]): 10
+## Manual Setup
+
+If you prefer to start services manually:
+
+1. **Start microservices (in separate terminals):**
+
+   ```bash
+   # Terminal 1 - Sum service
+   cd sum && npm run start:dev
+
+   # Terminal 2 - Subtract service  
+   cd subtract && npm run start:dev
+
+   # Terminal 3 - Multiply service
+   cd multiply && npm run start:dev
+
+   # Terminal 4 - Divide service
+   cd divide && npm run start:dev
+
+   # Terminal 5 - Gateway
+   cd gateway && npm run start:dev
    ```
 
-5. **View Documentation**:
-   - The PDF guide is located at `docs/generated-pdf.pdf`.
-   - To recompile the LaTeX source:
-     ```bash
-     cd docs
-     latexmk -pdf calculator-microservices-guide.tex
-     ```
+2. **Test with curl:**
+
+   ```bash
+   # Test sum
+   curl -X POST http://localhost:3001/calculate \
+     -H "Content-Type: application/json" \
+     -d '{"operation": "sum", "numbers": [1, 2, 3, 4]}'
+
+   # Test multiply
+   curl -X POST http://localhost:3001/calculate \
+     -H "Content-Type: application/json" \
+     -d '{"operation": "multiply", "numbers": [2, 3, 4]}'
+
+   # Test subtract
+   curl -X POST http://localhost:3001/calculate \
+     -H "Content-Type: application/json" \
+     -d '{"operation": "subtract", "numbers": [10, 3, 2]}'
+
+   # Test divide
+   curl -X POST http://localhost:3001/calculate \
+     -H "Content-Type: application/json" \
+     -d '{"operation": "divide", "numbers": [100, 5, 2]}'
+   ```
+
+## API Endpoints
+
+### Gateway (<http://localhost:3001>)
+
+- **GET /** - Health check endpoint
+- **POST /calculate** - Perform calculations
+
+#### Calculate Request Format
+
+```json
+{
+  "operation": "sum|subtract|multiply|divide",
+  "numbers": [1, 2, 3, 4]
+}
+```
+
+#### Calculate Response Format
+
+```json
+{
+  "result": 10
+}
+```
+
+## How It Works
+
+1. Client sends HTTP request to Gateway (port 3001)
+2. Gateway validates the request and routes it to the appropriate microservice via TCP
+3. Microservice performs the calculation and returns the result
+4. Gateway returns the result to the client
+
+## Features
+
+- **Microservices Architecture**: Each operation is handled by a separate service
+- **TCP Communication**: Inter-service communication via TCP
+- **HTTP Gateway**: RESTful API for client access
+- **Error Handling**: Proper error handling and validation
+- **Retry Logic**: Connection retry logic for resilience
+- **Health Checks**: Service health monitoring
+
+## Development
+
+Each service can be developed and deployed independently:
+
+```bash
+# Watch mode for development
+npm run start:dev
+
+# Build for production
+npm run build
+
+# Run tests
+npm run test
+```
 
 ## Troubleshooting
 
-- **ECONNREFUSED**: Ensure all microservices are running on their respective ports (3001–3005). Check with:
-  ```bash
-  netstat -tuln | grep 300[1-5]
-  ```
-- **Port Conflicts**: Change ports in `main.ts` files if needed.
-- **Dependencies**: Ensure `@nestjs/core`, `@nestjs/microservices`, and `rxjs` are installed in each microservice.
-- **Firewall**: Allow ports 3001–3005:
-  ```bash
-  sudo ufw allow 3001:3005/tcp
-  ```
+1. **Port conflicts**: Make sure ports 3001-3005 are available
+2. **Service connection issues**: Ensure all microservices are running before starting the gateway
+3. **Dependencies**: Run `npm install` in each service directory
 
-## Next Steps
+## Service Details
 
-- Add input validation using `@nestjs/class-validator`.
-- Implement a logging microservice with `@EventPattern`.
-- Switch to Redis or NATS for communication.
-- Write unit tests with `@nestjs/testing`.
+- **Gateway**: Exposes HTTP endpoints and manages client requests
+- **Sum**: Calculates sum of an array of numbers
+- **Subtract**: Performs sequential subtraction on an array of numbers  
+- **Multiply**: Calculates product of an array of numbers
+- **Divide**: Performs sequential division on an array of numbers (with zero-division protection)
