@@ -2,13 +2,14 @@
   "name": "test-client",
   "version": "1.0.0",
   "scripts": {
-    "start": "ts-node test-client.ts"
+    "start": "tsx test-client.ts"
   },
   "dependencies": {
     "axios": "^1.6.0"
   },
   "devDependencies": {
     "ts-node": "^10.9.1",
+    "tsx": "^4.20.3",
     "typescript": "^5.0.0"
   }
 }
