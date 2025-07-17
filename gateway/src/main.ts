@@ -6,11 +6,14 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   // Enable CORS for frontend integration
-  app.enableCors();
+  app.enableCors({
+    origin: ['http://localhost:3000', 'https://your-username.github.io'],
+    credentials: true,
+  });
 
   // Start the HTTP server
   await app.listen(3001);
-  console.log('Calculator Gateway is running on http://localhost:3001');
+  console.log('Calculator Gateway is running on  port 3001');
 }
 
 bootstrap().catch(console.error);
