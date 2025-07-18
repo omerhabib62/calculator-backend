@@ -12,8 +12,9 @@ async function bootstrap() {
   });
 
   // Start the HTTP server
-  await app.listen(3001);
-  console.log('Calculator Gateway is running on  port 3001');
+  const port = process.env.PORT || 3001;
+  await app.listen(port);
+  console.log(`Calculator Gateway is running on port ${port}`);
 }
 
 bootstrap().catch(console.error);
